@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 90334bf043fec4dca989e20d4c715e2e
+  m_SerializeEntries:
+  - m_GUID: 8ab18a349026b4a379239be0a4a056fc
+    m_Address: WriteTexture.compute
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1bd7c4c25058541b1b46a8e01a6cb492
+    m_Address: PlaneTest.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e61bc8ea593c24f6c82365861f9c068b
+    m_Address: PlaneTest.shadergraph
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f1035b3e1d2b44c2815ddbd6885aaa0
+    m_Address: CopyOffset.shadergraph
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d821fda4c275d4c81a9c9d64e4dc495b
+    m_Address: CopyCurrentTexture.compute
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e5b3e04b04eb2450dbb26ff25f774736
+    m_Address: PerlinNoise.jpg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0d917ca9d150482d86ac10295ee921a
+    m_Address: Assets/Common/Texture/Perlinnoise1.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 830667440f4e444eaa76c76c42c3cf4a
+    m_Address: Assets/Common/Texture/Perlinnoise2.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: caadcc6218dbe465bb3e729d6b2be991
+    m_Address: TestMat.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd31ff221b3f841ca842063eb3deb2db
+    m_Address: CopyOffset.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5c913c6a71f44926b9415be00f90799
+    m_Address: TextureAdd.shadergraph
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dda270a5ae2f04757b54abac7b36dc3c
+    m_Address: TextureAdd.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0b192a0aeba09415abef323bd75af6d3, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: e70969692bfa2478d96d57be6b1737bc, type: 2}
+    - {fileID: 11400000, guid: 4fbd0f48e85af40de97276aad6c87622, type: 2}

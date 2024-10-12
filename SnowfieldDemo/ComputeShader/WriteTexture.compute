@@ -1,0 +1,24 @@
+#pragma kernel CSMain
+
+RWTexture2D<float4> Result;
+StructuredBuffer<float3> UvArrBuffer;
+
+int BufferLength;
+float4 _Color;
+
+[numthreads(8, 8, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    uint width, height;
+    Result.GetDimensions(width, height);
+    float2 uv = float2(id.x / (float)width, id.y / (float)height);
+    for (uint i = 0; i < BufferLength; i++)
+    {
+        float distance = length(uv - float2(UvArrBuffer[i].x, UvArrBuffer[i].y));
+        float4 crtColor = Result[id.xy];
+        if (distance < UvArrBuffer[i].z)
+        {
+            Result[id.xy] = saturate(crtColor += _Color);
+        }
+    }
+}

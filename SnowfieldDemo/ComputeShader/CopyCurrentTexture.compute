@@ -1,0 +1,31 @@
+// CopyTexture.compute
+#pragma kernel CSMain
+
+Texture2D CrtTexture;
+Texture2D HistoryTexture;
+RWTexture2D<float4> DisplayTexture;
+int2 StepSize;
+
+// Compute Shader 主函数
+[numthreads(8, 8, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    uint width, height;
+    DisplayTexture.GetDimensions(width, height);
+    int2 historyPos = id.xy + StepSize;
+    float4 historyColor;
+    if (historyPos.x < 0 || historyPos.y < 0 || historyPos.x > width || historyPos.y > height)
+    {
+        historyColor = float4(0, 0, 0, 1);
+    }else
+    {
+        historyColor = HistoryTexture[historyPos];
+        //historyColor = float4(0.6, 0.5, 0.8, 1);
+    }
+    DisplayTexture[id.xy] += CrtTexture[id.xy];
+    if(historyColor.x != 0 && historyColor.y != 0 && historyColor.z != 0)
+    {
+        DisplayTexture[id.xy] += historyColor;
+        //DisplayTexture[id.xy] = saturate(DisplayTexture[id.xy]);
+    }
+}
