@@ -1,8 +1,9 @@
 // CopyTexture.compute
 #pragma kernel CSMain
+#pragma kernel CSCopy
 
 Texture2D CrtTexture;
-Texture2D HistoryTexture;
+RWTexture2D<float4> HistoryTexture;
 RWTexture2D<float4> DisplayTexture;
 int2 StepSize;
 
@@ -10,22 +11,32 @@ int2 StepSize;
 [numthreads(8, 8, 1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
+
     uint width, height;
     DisplayTexture.GetDimensions(width, height);
-    int2 historyPos = id.xy + StepSize;
+    //DisplayTexture[id.xy] = float4((StepSize.x + id.x)/width, (id.y + StepSize.y)/height, 1, 1);
+    //DisplayTexture[id.xy] = HistoryTexture[uint2(id.x + StepSizeX, id.y + StepSizeY)];
+    //return;
+    
+    uint2 historyPos = id.xy + StepSize;
     float4 historyColor;
-    if (historyPos.x < 0 || historyPos.y < 0 || historyPos.x > width || historyPos.y > height)
+    if (historyPos.x < 0 || historyPos.y < 0 || historyPos.x >= width || historyPos.y >= height)
     {
-        historyColor = float4(0, 0, 0, 1);
-    }else
+        historyColor = float4(0, 0, 0, 0);
+    }
+    else
     {
         historyColor = HistoryTexture[historyPos];
-        //historyColor = float4(0.6, 0.5, 0.8, 1);
     }
-    DisplayTexture[id.xy] += CrtTexture[id.xy];
+    DisplayTexture[id.xy] = CrtTexture[id.xy];
     if(historyColor.x != 0 && historyColor.y != 0 && historyColor.z != 0)
     {
         DisplayTexture[id.xy] += historyColor;
-        //DisplayTexture[id.xy] = saturate(DisplayTexture[id.xy]);
     }
+}
+
+[numthreads(8, 8, 1)]
+void CSCopy (uint3 id : SV_DispatchThreadID)
+{
+    HistoryTexture[id.xy] = DisplayTexture[id.xy];
 }

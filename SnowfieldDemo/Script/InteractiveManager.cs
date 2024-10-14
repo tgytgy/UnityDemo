@@ -8,11 +8,9 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
     private RenderTexture _crtRt;
     private RenderTexture _displayRt;
     private RenderTexture _historyRt;
-    private Material _addMaterial;
     private ComputeShader _cs;  //用来绘制的compute shader
     private ComputeShader _csCopy;  //用来复制脚印的compute shader
     private Material _testPlaneMat;
-    private Material _realTestMat;
     private int _worldSize;     //大世界大小
     private int _visualSize;    //可视脚印区域大小
     private int _texSize;
@@ -27,8 +25,7 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
     private int _uvArrCsBufferStride;
     private ComputeBuffer _uvArrCsBuffer;
     private List<Vector3> _posArr;
-    private bool enableUpdate = true;
-    
+    private int[] _offset;    
     
     private readonly Color _color = Color.white;
     private static readonly int BufferLengthId = Shader.PropertyToID("BufferLength");
@@ -67,7 +64,6 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
         _displayRt.Create();
         _historyRt.Create();
         _triggers = new List<InteractiveTrigger>();
-        _addMaterial = AssetManager.LoadRes<Material>("TextureAdd.mat");
         _visualSize = 100;
         _worldSize = 200;
         _uvRange = _visualSize / (float)_worldSize * 0.5f;
@@ -77,11 +73,10 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
         _csCopy = AssetManager.LoadRes<ComputeShader>("CopyCurrentTexture.compute");
         _testPlaneMat = AssetManager.LoadRes<Material>("PlaneTest.mat");
         _testPlaneMat.SetTexture(InteractiveTex, _displayRt);
-        _realTestMat = AssetManager.LoadRes<Material>("TestMat.mat");
         _uvArrCsBufferStride = 12;
         _uvArrCsBuffer = new ComputeBuffer(1, _uvArrCsBufferStride);
         _posArr = new List<Vector3>();
-        
+        _offset = new []{0, 0};
         //test
         AssetManager.LoadRes<Material>("CrtMat.mat").mainTexture = _crtRt;
         AssetManager.LoadRes<Material>("DisplayMat.mat").mainTexture = _displayRt;
@@ -154,16 +149,19 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
     private void MixCrtAndHistory()
     {
         var dPos = _interactiveFollow.GetCrtPos() - _interactivePos;
-        var offset =new Vector2(dPos.x / _visualSize, dPos.z / _visualSize);
+        var offset =new Vector2(-1 * dPos.x / _visualSize, -1 * dPos.z / _visualSize);
         offset *= _texSize;
-        offset.x = Mathf.RoundToInt(offset.x);
-        offset.y = Mathf.RoundToInt(offset.y);
+        _offset[0] = Mathf.RoundToInt(offset.x);
+        _offset[1] = Mathf.RoundToInt(offset.y);
         _csCopy.SetTexture(0, CrtTextureId, _crtRt);
         _csCopy.SetTexture(0, HistoryTextureId, _historyRt);
         _csCopy.SetTexture(0, DisplayTextureId, _displayRt);
-        _csCopy.SetVector(StepSizeId, offset);
+        _csCopy.SetInts(StepSizeId, _offset);
         _csCopy.Dispatch(0, _threadGroupsX, _threadGroupsY, 1);
-        Graphics.Blit(_displayRt, _historyRt);
+        
+        _csCopy.SetTexture(1, HistoryTextureId, _historyRt);
+        _csCopy.SetTexture(1, DisplayTextureId, _displayRt);
+        _csCopy.Dispatch(1, _threadGroupsX, _threadGroupsY, 1);
     }
 
     /// <summary>
