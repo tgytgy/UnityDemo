@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -20,12 +21,16 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
     private int _threadGroupsX;    //compute shader
     private int _threadGroupsY;    //compute shader
     private InteractiveFollow _interactiveFollow;
-    private Vector3 _interactivePos;
     private List<InteractiveTrigger> _triggers;
     private int _uvArrCsBufferStride;
     private ComputeBuffer _uvArrCsBuffer;
     private List<Vector3> _posArr;
-    private int[] _offset;    
+    private List<Vector3> _prePosArr;
+    private int[] _offset;
+    private float _unit;
+    private Vector3 _followPosCrt;
+    private Vector3 _followPosPre;
+    private bool _existChange;
     
     private readonly Color _color = Color.white;
     private static readonly int BufferLengthId = Shader.PropertyToID("BufferLength");
@@ -76,7 +81,12 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
         _uvArrCsBufferStride = 12;
         _uvArrCsBuffer = new ComputeBuffer(1, _uvArrCsBufferStride);
         _posArr = new List<Vector3>();
+        _prePosArr = new List<Vector3>();
         _offset = new []{0, 0};
+        _followPosCrt = Vector3.zero;
+        _followPosPre = Vector3.zero;
+        _unit = (float)_visualSize / _texSize;
+        _existChange = false;
         //test
         AssetManager.LoadRes<Material>("CrtMat.mat").mainTexture = _crtRt;
         AssetManager.LoadRes<Material>("DisplayMat.mat").mainTexture = _displayRt;
@@ -85,7 +95,6 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
 
     private void Update()
     {
-        //捕捉角色移动
         if (!_interactiveFollow)
         {
             return;
@@ -94,15 +103,17 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
         {
             return;
         }
+
+        _followPosCrt = _interactiveFollow.GetCrtPos();
         //绘制当前帧
         PaintTriggers();
         //混合当前帧和历史脚印，如果有位移则将历史脚印位移,并把混合后的存到历史rt
         MixCrtAndHistory();
         //移动纹理位置
         UpdateInteractiveArea();
-        _interactivePos = _interactiveFollow.GetCrtPos();
+        _followPosPre = _followPosCrt;
+        ClearCrtTex();
     }
-    
     
     /// <summary>
     /// 设置InteractiveFollow
@@ -118,9 +129,14 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
     /// </summary>
     private void UpdateInteractiveArea()
     {
-        var localPos = _crtUVOriginTr.position - _interactiveFollow.GetCrtPos();;
-        var x = localPos.x / _worldSize;
-        var y = localPos.z / _worldSize;
+        if (_offset[0] == 0 && _offset[1] == 0)
+        {
+            return;
+        }
+        var crtPixelLocation = GetPixelLocation(_interactiveFollow.GetCrtPos());
+        var x = crtPixelLocation.x * _unit / _worldSize;
+        var y = crtPixelLocation.y * _unit / _worldSize;
+
         _testPlaneMat.SetVector(InteractiveBound, new Vector4(x - _uvRange, y - _uvRange, x + _uvRange, y + _uvRange));
     }
 
@@ -148,11 +164,18 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
     /// </summary>
     private void MixCrtAndHistory()
     {
-        var dPos = _interactiveFollow.GetCrtPos() - _interactivePos;
-        var offset =new Vector2(-1 * dPos.x / _visualSize, -1 * dPos.z / _visualSize);
-        offset *= _texSize;
-        _offset[0] = Mathf.RoundToInt(offset.x);
-        _offset[1] = Mathf.RoundToInt(offset.y);
+        var offsetY = Mathf.Abs(_followPosCrt.y - _followPosPre.y);
+        var crtPixelLocation = GetPixelLocation(_followPosCrt);
+        var prePixelLocation = GetPixelLocation(_followPosPre);
+        var ost = crtPixelLocation - prePixelLocation;
+        if (ost == Vector2Int.zero && offsetY < _unit && !_existChange)
+        {
+            _offset[0] = 0;
+            _offset[1] = 0;
+            return;
+        }
+        _offset[0] = ost.x;
+        _offset[1] = ost.y;
         _csCopy.SetTexture(0, CrtTextureId, _crtRt);
         _csCopy.SetTexture(0, HistoryTextureId, _historyRt);
         _csCopy.SetTexture(0, DisplayTextureId, _displayRt);
@@ -169,22 +192,40 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
     /// </summary>
     private void PaintTriggers()
     {
-        var crtPos = _interactiveFollow.GetCrtPos();
-        var pos = new Vector2(crtPos.x, crtPos.z);
+        var pos = new Vector2(_followPosCrt.x, _followPosCrt.z);
+        var halfRange = _visualSize / 2f;
         _posArr.Clear();
         foreach (var trigger in _triggers)
         {
             var triggerPos = trigger.GetPosXZ();
             var offset = triggerPos - pos;
-            if(Mathf.Abs(offset.x) > 100 || Mathf.Abs(offset.y) > 100)
+            if(Mathf.Abs(offset.x) > halfRange || Mathf.Abs(offset.y) > halfRange)
             {
                 continue;
             }
-
-            var uv = (offset - new Vector2(-50, -50))/100;
+            var uv = (new Vector2(halfRange, halfRange) - offset) / _visualSize;
             _posArr.Add(new Vector3(uv.x, uv.y, trigger.GetRecordRadius() / _visualSize));
         }
 
+        _existChange = false;
+        if (_posArr.Count == _prePosArr.Count)
+        {
+            for (var i = 0; i < _posArr.Count; i++)
+            {
+                if (!(Mathf.Abs((_posArr[i] - _prePosArr[i]).magnitude) < _unit)) continue;
+                _existChange = true;
+                break;
+            }
+        }
+        else
+        {
+            _existChange = true;
+        }
+
+        if (!_existChange)
+        {
+            return;
+        }
         var count = _posArr.Count;
         if (count != _uvArrCsBuffer.count)
         {
@@ -197,5 +238,29 @@ public class InteractiveManager : SingtonMono <InteractiveManager>
         _cs.SetVector(ColorId, _color);
         _cs.SetTexture(0, ResultId, _crtRt);
         _cs.Dispatch(0, _threadGroupsX, _threadGroupsY, 1);
+        _prePosArr.Clear();
+        foreach (var posItem in _posArr)
+        {
+            _prePosArr.Add(posItem);
+        }
+    }
+    
+    private void ClearCrtTex()
+    { 
+        _cs.SetTexture(1, ResultId, _crtRt);
+        _cs.Dispatch(1, _threadGroupsX, _threadGroupsY, 1);
+    }
+    
+    private Vector2Int GetPixelLocation(Vector3 worldPos)
+    {
+        var localPos = _crtUVOriginTr.position - worldPos;
+        var x = localPos.x;
+        var y = localPos.z;
+        if (x < 0 || y < 0 || x > _worldSize || y > _worldSize)
+        {
+            return new Vector2Int(0, 0);
+        }
+        
+        return new Vector2Int(Mathf.CeilToInt(x/_unit), Mathf.CeilToInt(y/_unit));
     }
 }
