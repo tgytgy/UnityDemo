@@ -27,25 +27,33 @@ def create_symlink(source, target):
     else:
         # Mac/Linux 使用 ln -s 命令
         try:
-            subprocess.run(["ln", "-s", source, target], check=True)
+            os.symlink(source, target)
             print(f"成功创建软链接: {source} -> {target}")
-        except subprocess.CalledProcessError as e:
+        except OSError as e:
             print(f"创建软链接失败: {e}")
 
 def main():
-    # 定义源文件夹和目标文件夹的映射关系
-    # 格式: {目标路径: 源路径}
+    # 获取脚本所在目录的上一级路径
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(script_dir)
+    
+    # 定义源文件夹和目标文件夹的映射关系（相对于父目录）
     symlink_map = {
-        "/Users/tiangengyu/Desktop/UnityProject/Demo/Assets/Core": "/Users/tiangengyu/Desktop/Github/Frame/Core",
-        "/Users/tiangengyu/Desktop/UnityProject/Demo/Assets/ExternalRes": "/Users/tiangengyu/Desktop/Github/Frame/ExternalRes",
-        "/Users/tiangengyu/Desktop/UnityProject/Demo/Assets/Scenes": "/Users/tiangengyu/Desktop/Github/Frame/Scenes"
+        os.path.join(parent_dir, "Project", "Assets", "Core"): os.path.join(parent_dir, "Core"),
+        os.path.join(parent_dir, "Project", "Assets", "ExternalRes"): os.path.join(parent_dir, "ExternalRes"),
+        os.path.join(parent_dir, "Project", "Assets", "Scenes"): os.path.join(parent_dir, "Scenes")
         # 添加更多映射
     }
 
     # 检查是否是管理员权限（Windows 需要管理员权限创建软链接）
     if platform.system() == "Windows":
-        if not ctypes.windll.shell32.IsUserAnAdmin():
-            print("在 Windows 上创建软链接需要管理员权限，请以管理员身份运行脚本。")
+        try:
+            import ctypes
+            if not ctypes.windll.shell32.IsUserAnAdmin():
+                print("在 Windows 上创建软链接需要管理员权限，请以管理员身份运行脚本。")
+                sys.exit(1)
+        except:
+            print("无法检查Windows管理员权限，请确保以管理员身份运行脚本。")
             sys.exit(1)
 
     # 创建软链接
