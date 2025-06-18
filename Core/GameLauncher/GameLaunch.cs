@@ -106,11 +106,16 @@ public class GameLaunch : MonoBehaviour
     
     private void Start()
     {
+        PanelManager.Instance.InitLayers();
+        CameraManager.Instance.InitGlobalUICamera();
         _assetLoader = new AssetLoader();
-        if (enableHybridCLR)
+        if (!enableHybridCLR)
         {
-            HybridCLROptimizer.OptimizeHybridCLR();
+            GameManager.Instance.StartChangeScene(START_SCENE_NAME);
+            //GameManager.Instance.ChangeScene(START_SCENE_NAME);
+            return;
         }
+        HybridCLROptimizer.OptimizeHybridCLR();
         _launchCoroutine = StartCoroutine(Launch());
         InitUI();
     }
@@ -129,6 +134,10 @@ public class GameLaunch : MonoBehaviour
     
     private void OnDestroy()
     {
+        if (_launchCoroutine == null)
+        {
+            return;
+        }
         StopCoroutine(_launchCoroutine);
         _launchCoroutine = null;
     }
@@ -311,7 +320,7 @@ public class GameLaunch : MonoBehaviour
     
     private IEnumerator EnterGame()
     {
-        yield return _assetLoader.ChangeScene(START_SCENE_NAME);
+        yield return GameManager.Instance.ChangeScene(START_SCENE_NAME);
         Debug.Log("EnterGame finish!");
     }
     

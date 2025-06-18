@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum UILayer
 {
@@ -24,6 +26,25 @@ public class PanelManager : Singleton<PanelManager>
         _panelNameDic = new Dictionary<string, List<BasePanel>>();
     }
 
+    public void InitLayers()
+    {
+        var _ = new GameObject("World");
+        var canvasGo = new GameObject("Canvas");
+        var canvas = canvasGo.AddComponent<Canvas>();
+        var canvasScaler = canvasGo.AddComponent<CanvasScaler>();
+        canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        canvasScaler.referenceResolution = new Vector2(1920, 1080);
+        canvasScaler.matchWidthOrHeight = 1;
+        canvas.renderMode = RenderMode.ScreenSpaceCamera;
+        canvas.worldCamera = CameraManager.Instance.GetUICamera();
+        foreach (UILayer value in Enum.GetValues(typeof(UILayer)))
+        {
+            var go = new GameObject(value.ToString());
+            go.transform.SetParent(canvasGo.transform);
+            go.transform.localPosition = Vector3.zero;
+        }
+    }
+    
     public void PanelOn(string trName, string panelName, Transform rootNode)
     {
         var go = AssetManager.LoadPrefab(trName, rootNode);
@@ -40,10 +61,10 @@ public class PanelManager : Singleton<PanelManager>
             return;
         }
         _panelIdDic.Add(go.GetInstanceID(), s);
-        List<BasePanel> list;
-        if (_panelNameDic.TryGetValue(panelName, out list))
+        if (_panelNameDic.TryGetValue(panelName, out var list))
         {
-            
+            list ??= new List<BasePanel>();
+            list.Add(s);
         }
     }
 }

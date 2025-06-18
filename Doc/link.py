@@ -36,12 +36,12 @@ def main():
     # 获取脚本所在目录的上一级路径
     script_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(script_dir)
-    
+    project_dir = "D:\\UnityProject\\UnityDemo"
     # 定义源文件夹和目标文件夹的映射关系（相对于父目录）
     symlink_map = {
-        os.path.join(parent_dir, "Project", "Assets", "Core"): os.path.join(parent_dir, "Core"),
-        os.path.join(parent_dir, "Project", "Assets", "ExternalRes"): os.path.join(parent_dir, "ExternalRes"),
-        os.path.join(parent_dir, "Project", "Assets", "Scenes"): os.path.join(parent_dir, "Scenes")
+        os.path.join(project_dir, "Assets", "Core"): os.path.join(parent_dir, "Core"),
+        os.path.join(project_dir, "Assets", "ExternalRes"): os.path.join(parent_dir, "ExternalRes"),
+        os.path.join(project_dir, "Assets", "Scenes"): os.path.join(parent_dir, "Scenes")
         # 添加更多映射
     }
 

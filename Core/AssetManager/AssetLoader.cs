@@ -182,16 +182,7 @@ public class AssetLoader
         }
     }
 
-    public IEnumerator ChangeScene(string sceneName)
-    {
-        var op = Addressables.LoadSceneAsync(sceneName, LoadSceneMode.Single);
-        yield return op;
-        if (op.Status != AsyncOperationStatus.Succeeded)
-        {
-            Debug.LogError(
-                $"load scene failed,exception:{op.OperationException.Message} \r\n {op.OperationException.StackTrace}");
-        }
-    }
+    
 
     public bool HasContentToDownload()
     {

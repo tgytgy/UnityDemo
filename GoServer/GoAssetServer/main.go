@@ -10,54 +10,39 @@ import (
 	"time"
 )
 
-// 设置资源文件的根目录
-var resourceDir = "/Users/tiangengyu/Desktop/UnityProject/Demo/ServerData/"
+var resourceDir = "D:\\UnityProject\\UnityDemo\\ServerData"
 
-// 自定义中间件，用于记录请求日志
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// 记录请求开始时间
 		startTime := time.Now()
-
-		// 调用下一个处理器
 		next.ServeHTTP(w, r)
-
-		// 记录请求结束时间并计算耗时
-		duration := time.Since(startTime)
-		log.Printf(
-			"%s\t%s\t%s\t%s",
-			r.Method,     // 请求方法
-			r.URL.Path,   // 请求路径
-			r.RemoteAddr, // 客户端地址
-			duration,     // 请求耗时
-		)
+		log.Printf("%s\t%s\t%s\t%s", r.Method, r.URL.Path, r.RemoteAddr, time.Since(startTime))
 	})
 }
 
-// BuildTarget 处理中间件
 func buildTargetMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// 提取路径中的 BuildTarget（如 /assets/Windows → "Windows"）
+		// 提取 BuildTarget（如 "/assets/StandaloneWindows64" → "StandaloneWindows64"）
 		path := strings.TrimPrefix(r.URL.Path, "/assets/")
-		buildTarget := strings.Split(path, "/")[0] // 取第一个部分
+		buildTarget := strings.Split(path, "/")[0]
 
 		if buildTarget == "" {
-			http.Error(w, "BuildTarget is missing in path (e.g., /assets/Windows/)", http.StatusBadRequest)
+			http.Error(w, "必须指定 BuildTarget（如 /assets/StandaloneWindows64/）", http.StatusBadRequest)
 			return
 		}
 
-		// 构建完整资源路径（如 /Desktop/UnityProject/Demo/ServerData/Windows/）
+		// 构建完整资源路径
 		fullResourceDir := filepath.Join(resourceDir, buildTarget)
 
 		// 检查目录是否存在
 		if _, err := os.Stat(fullResourceDir); os.IsNotExist(err) {
-			http.Error(w, fmt.Sprintf("BuildTarget directory '%s' does not exist", buildTarget), http.StatusNotFound)
+			http.Error(w, fmt.Sprintf("目录 %s 不存在", buildTarget), http.StatusNotFound)
 			return
 		}
 
-		// 创建文件服务器，并正确处理路径（移除 /assets/BuildTarget/ 前缀）
+		// 创建文件服务器，并移除 "/assets/BuildTarget" 前缀
 		fileServer := http.StripPrefix(
-			"/assets/"+buildTarget+"/",
+			"/assets/"+buildTarget,
 			http.FileServer(http.Dir(fullResourceDir)),
 		)
 
@@ -69,17 +54,18 @@ func buildTargetMiddleware(next http.Handler) http.Handler {
 func main() {
 	// 检查资源目录是否存在
 	if _, err := os.Stat(resourceDir); os.IsNotExist(err) {
-		log.Fatalf("Resource directory '%s' does not exist", resourceDir)
+		log.Fatalf("资源目录 %s 不存在", resourceDir)
 	}
 
-	// 使用 FileServer 处理 /assets/ 路径
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
-	http.Handle("/assets/", loggingMiddleware(buildTargetMiddleware(handler)))
+	// 注册路由，使用中间件链
+	http.Handle("/assets/", loggingMiddleware(buildTargetMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 此处不会执行，因为 buildTargetMiddleware 已完全处理请求
+		http.NotFound(w, r)
+	}))))
 
-	// 设置服务器监听地址
 	port := "8080"
-	fmt.Printf("Starting server on port %s...\n", port)
+	fmt.Printf("服务器启动，监听端口 %s...\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+		log.Fatalf("服务器启动失败: %v", err)
 	}
 }

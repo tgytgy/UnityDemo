@@ -1,4 +1,6 @@
 # Document
-## 1.热更新模块
-## 2.资源管理模块
-## 3.UI模块
+## 1.配置项目
+1. 修改软链接脚本，执行软链接
+2. 打开项目，安装Addressable，Urp， HybridCLR
+3. HybridCLR Install
+4. IL2Cpp .Net FrameWork
