@@ -36,7 +36,9 @@ def main():
     # 获取脚本所在目录的上一级路径
     script_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(script_dir)
-    project_dir = "D:\\UnityProject\\UnityDemo"
+    #project_dir = "D:\\UnityProject\\UnityDemo"    #windows
+    project_dir = "/Users/tiangengyu/Desktop/UnityProject/Demo" #Mac
+
     # 定义源文件夹和目标文件夹的映射关系（相对于父目录）
     symlink_map = {
         os.path.join(project_dir, "Assets", "Core"): os.path.join(parent_dir, "Core"),

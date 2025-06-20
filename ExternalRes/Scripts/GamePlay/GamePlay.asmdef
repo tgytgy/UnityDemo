@@ -1,7 +1,9 @@
 {
     "name": "GamePlay",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "CoreBase"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

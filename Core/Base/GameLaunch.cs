@@ -70,7 +70,7 @@ public class GameLaunch : MonoBehaviour
     const string GAMEPLAY_DLL_NAME = "GamePlay.dll";
     
     //开始场景
-    const string START_SCENE_NAME = "StartScene.unity";
+    public const string START_SCENE_NAME = "StartScene.unity";
     
     //元数据信息文件
     public const string META_DATA_DLLS_TO_LOAD_PATH = "Assets/HotUpdateDlls/MetaDataDllToLoad.txt";
@@ -107,7 +107,7 @@ public class GameLaunch : MonoBehaviour
     private void Start()
     {
         PanelManager.Instance.InitLayers();
-        CameraManager.Instance.InitGlobalUICamera();
+        CameraManager.Instance.InitGlobalOnce();
         _assetLoader = new AssetLoader();
         if (!enableHybridCLR)
         {

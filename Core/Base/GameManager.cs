@@ -24,6 +24,7 @@ public class GameManager : SingletonMono<GameManager>
         }
 
         PanelManager.Instance.InitLayers();
+        ChangeSceneCallBack(sceneName);
         StopCoroutine(_sceneCoroutine);
     }
 
@@ -31,5 +32,13 @@ public class GameManager : SingletonMono<GameManager>
     {
         Debug.Log($"load scene name:{sceneName}");
         yield return null;
+    }
+
+    private void ChangeSceneCallBack(string sceneName)
+    {
+        if (sceneName == GameLaunch.START_SCENE_NAME)
+        {
+            PanelManager.Instance.PanelOn("prefab_panel_template.prefab", "TestPanel", UILayer.LayerMiddle1);
+        }
     }
 }

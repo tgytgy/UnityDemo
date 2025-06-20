@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using Object = UnityEngine.Object;
 
 public static class AssetManager
 {
@@ -19,9 +20,14 @@ public static class AssetManager
     public static GameObject LoadPrefab(string path, Transform parent)
     {
         var go = LoadAssetSync<GameObject>(path);
-        if (go) return go;
-        Debug.LogError($"Failed to load prefab {path}");
-        return null;
+        if (!go)
+        {
+            Debug.LogError($"Failed to load prefab {path}");
+            return null;
+        }
+
+        go = Object.Instantiate(go, parent, true);
+        return go;
     }
     
     public static void LoadAssetAsync<T>(string path, Action<T> cb)
