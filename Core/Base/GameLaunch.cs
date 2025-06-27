@@ -234,7 +234,7 @@ public class GameLaunch : MonoBehaviour
     private string[] GetMetaDataDllToLoad()
     {
         string[] result = null;
-        var metaDataToLoad = _assetLoader.LoadAssetSync<TextAsset>(META_DATA_DLLS_TO_LOAD);
+        var metaDataToLoad = AssetManager.LoadAssetSync<TextAsset>(META_DATA_DLLS_TO_LOAD);
         if (metaDataToLoad == null)
         {
             Debug.LogError($"cant load metaDataText,path:{META_DATA_DLLS_TO_LOAD}");
@@ -287,7 +287,7 @@ public class GameLaunch : MonoBehaviour
     /// <param name="path"></param>
     private void ReadDllBytes(string path)
     {
-        var dllText = _assetLoader.LoadAssetSync<TextAsset>(path);
+        var dllText = AssetManager.LoadAssetSync<TextAsset>(path);
 
         if (dllText == null)
         {
@@ -307,7 +307,7 @@ public class GameLaunch : MonoBehaviour
     /// </summary>
     private void ExecuteRuntimeInitializeOnLoadMethodAttribute()
     {
-        var runtimeInitializeOnLoadMethodCollection = _assetLoader.LoadAssetSync<TextAsset>(RUN_TIME_INITIALIZE_ON_LOAD_METHOD_COLLECTION);
+        var runtimeInitializeOnLoadMethodCollection = AssetManager.LoadAssetSync<TextAsset>(RUN_TIME_INITIALIZE_ON_LOAD_METHOD_COLLECTION);
         var json = runtimeInitializeOnLoadMethodCollection.text;
         var collection = JsonUtility.FromJson<RuntimeInitializeOnLoadMethodCollection>(json);
         foreach (var methodInfo in collection.methodExecutionInfos)

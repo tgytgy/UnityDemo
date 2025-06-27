@@ -1,0 +1,290 @@
+[
+  {
+    "ID": 3020000,
+    "SysTp": 302,
+    "OID": 0,
+    "AutoCreate": 1,
+    "Class": "GlobalConfigCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020001,
+    "SysTp": 302,
+    "OID": 1,
+    "AutoCreate": 1,
+    "Class": "UserCtr",
+    "LoginUrl": [
+      "cmd.UserInfoS2C"
+    ],
+    "SyncUrl": [
+      "cmd.UserInfoChangeS2C",
+      "cmd.LvUpS2C"
+    ],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020002,
+    "SysTp": 302,
+    "OID": 2,
+    "AutoCreate": 1,
+    "Class": "SettingCtr",
+    "LoginUrl": [
+      "cmd.UserSettingS2C"
+    ],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020003,
+    "SysTp": 302,
+    "OID": 3,
+    "AutoCreate": 1,
+    "Class": "PurchaseCtr",
+    "LoginUrl": [
+      "cmd.ShopS2C"
+    ],
+    "SyncUrl": [
+      "cmd.ShopChangeS2C"
+    ],
+    "ErrSuspend": 1,
+    "UnlockCd": 306005
+  },
+  {
+    "ID": 3020004,
+    "SysTp": 302,
+    "OID": 4,
+    "AutoCreate": 1,
+    "Class": "AdvertisementCtr",
+    "LoginUrl": [
+      "cmd.AdvConfigS2C"
+    ],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020005,
+    "SysTp": 302,
+    "OID": 5,
+    "AutoCreate": 1,
+    "Class": "StoryCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020006,
+    "SysTp": 302,
+    "OID": 6,
+    "AutoCreate": 1,
+    "Class": "TDSceneCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020007,
+    "SysTp": 302,
+    "OID": 7,
+    "AutoCreate": 1,
+    "Class": "MainSceneCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020008,
+    "SysTp": 302,
+    "OID": 8,
+    "AutoCreate": 1,
+    "Class": "ActivityCtr",
+    "LoginUrl": [
+      "cmd.ActivityConfigS2C"
+    ],
+    "SyncUrl": [
+      "cmd.ActivityConfigChangeS2C"
+    ],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3010001,
+    "SysTp": 301,
+    "OID": 9,
+    "AutoCreate": 1,
+    "Class": "Recruit_Ctr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020009,
+    "SysTp": 302,
+    "OID": 10,
+    "AutoCreate": 1,
+    "Class": "ChapterCtr",
+    "LoginUrl": [
+      "cmd.ChapterConfigS2C"
+    ],
+    "SyncUrl": [
+      "cmd.ChapterConfigChangeS2C"
+    ],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020010,
+    "SysTp": 302,
+    "OID": 11,
+    "AutoCreate": 1,
+    "Class": "TowerCtr",
+    "LoginUrl": [
+      "cmd.UserTowerS2C"
+    ],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020012,
+    "SysTp": 302,
+    "OID": 13,
+    "AutoCreate": 1,
+    "Class": "AntiqueCtr",
+    "LoginUrl": [
+      "cmd.UserCollectionS2C"
+    ],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": 306004
+  },
+  {
+    "ID": 3020013,
+    "SysTp": 302,
+    "OID": 14,
+    "AutoCreate": 1,
+    "Class": "LeagueCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020014,
+    "SysTp": 302,
+    "OID": 1,
+    "AutoCreate": 1,
+    "Class": "AssetCtr",
+    "LoginUrl": [
+      "cmd.UserBagS2C"
+    ],
+    "SyncUrl": [
+      "cmd.UserBagChangeS2C"
+    ],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3010002,
+    "SysTp": 301,
+    "OID": 15,
+    "AutoCreate": 0,
+    "Class": "LuckyTurntableCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3010003,
+    "SysTp": 301,
+    "OID": 15,
+    "AutoCreate": 0,
+    "Class": "LuckyAdventureCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020015,
+    "SysTp": 302,
+    "OID": 6,
+    "AutoCreate": 1,
+    "Class": "GuideCtr",
+    "LoginUrl": [
+      "cmd.UserGuideS2C"
+    ],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3010004,
+    "SysTp": 301,
+    "OID": 16,
+    "AutoCreate": 1,
+    "Class": "AchievementCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3010006,
+    "SysTp": 301,
+    "OID": 17,
+    "AutoCreate": 0,
+    "Class": "FeedbackCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 0,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020016,
+    "SysTp": 302,
+    "OID": 18,
+    "AutoCreate": 1,
+    "Class": "UnlockCtr",
+    "LoginUrl": [
+      "cmd.UnlockCondS2C"
+    ],
+    "SyncUrl": [
+      "cmd.UnlockCondChangeS2C"
+    ],
+    "ErrSuspend": 1,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3020017,
+    "SysTp": 302,
+    "OID": 19,
+    "AutoCreate": 1,
+    "Class": "InstanceCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 0,
+    "UnlockCd": null
+  },
+  {
+    "ID": 3010005,
+    "SysTp": 301,
+    "OID": 20,
+    "AutoCreate": 1,
+    "Class": "AscensionCtr",
+    "LoginUrl": [],
+    "SyncUrl": [],
+    "ErrSuspend": 0,
+    "UnlockCd": null
+  }
+]
