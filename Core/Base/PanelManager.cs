@@ -15,22 +15,33 @@ public enum UILayer
     LayerBottom2,
     LayerBottom3,
 }
+
+public enum WorldNode
+{
+    Node1,
+    Node2,
+    Node3,
+    Node4
+}
+
 public class PanelManager : Singleton<PanelManager>
 {
     private Dictionary<int, BasePanel> _panelIdDic;
     private Dictionary<string, List<BasePanel>> _panelNameDic;
     private Dictionary<UILayer, Transform> _layerDic;
+    private Dictionary<WorldNode, Transform> _worldDic;
 
     public PanelManager()
     {
         _panelIdDic = new Dictionary<int, BasePanel>();
         _panelNameDic = new Dictionary<string, List<BasePanel>>();
         _layerDic = new Dictionary<UILayer, Transform>();
+        _worldDic = new Dictionary<WorldNode, Transform>();
     }
 
     public void InitLayers()
     {
-        var _ = new GameObject("World");
+        var worldRootNode = new GameObject("World");
         var canvasGo = new GameObject("Canvas");
         var canvas = canvasGo.AddComponent<Canvas>();
         var canvasScaler = canvasGo.AddComponent<CanvasScaler>();
@@ -53,9 +64,19 @@ public class PanelManager : Singleton<PanelManager>
             go.transform.localPosition = Vector3.zero;
             _layerDic[value] = rectTransform;
         }
+
+        foreach (WorldNode value in Enum.GetValues(typeof(WorldNode)))
+        {
+            var go = new GameObject(value.ToString());
+            var tr = go.transform;
+            tr.SetParent(worldRootNode.transform);
+            tr.localScale = Vector3.one;
+            tr.localPosition = Vector3.zero;
+            _worldDic[value] = tr;
+        }
     }
     
-    public BasePanel PanelOn(string trName, string panelName, Transform rootNode, Dictionary<string, object> args = null)
+    public BasePanel PanelOn(string trName, string panelName, Transform rootNode, Dictionary<string, object> args = null, bool isUI = true)
     {
         var go = AssetManager.LoadPrefab(trName, rootNode);
         if (!go)
@@ -71,12 +92,16 @@ public class PanelManager : Singleton<PanelManager>
             return null;
         }
 
-        var tr = go.GetComponent<RectTransform>();
-        tr.anchorMin = Vector2.zero;
-        tr.anchorMax = Vector2.one;
-        tr.offsetMin = Vector2.zero;
-        tr.offsetMax = Vector2.zero;
-        tr.pivot = new Vector2(0.5f, 0.5f);
+        var tr = go.transform;
+        if (isUI)
+        {
+            var rectTr = go.GetComponent<RectTransform>();
+            rectTr.anchorMin = Vector2.zero;
+            rectTr.anchorMax = Vector2.one;
+            rectTr.offsetMin = Vector2.zero;
+            rectTr.offsetMax = Vector2.zero;
+            rectTr.pivot = new Vector2(0.5f, 0.5f);
+        }
         tr.localPosition = Vector2.zero;
         tr.localScale = Vector2.one;
         s.InitByArgs(args);
@@ -97,5 +122,10 @@ public class PanelManager : Singleton<PanelManager>
     public BasePanel PanelOn(string trName, string panelName, UILayer uiLayer, Dictionary<string, object> args = null)
     {
         return PanelOn(trName, panelName, _layerDic[uiLayer], args);
+    }
+    
+    public BasePanel PanelOn(string trName, string panelName, WorldNode worldNode, Dictionary<string, object> args = null)
+    {
+        return PanelOn(trName, panelName, _worldDic[worldNode], args, false);
     }
 }

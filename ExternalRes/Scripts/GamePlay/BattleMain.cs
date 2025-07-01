@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BattleMain : MonoBehaviour
+public class BattleMain : BasePanel
 {
     private Vector3[] _areaCorners;
 

@@ -43,7 +43,8 @@ def main():
     symlink_map = {
         os.path.join(project_dir, "Assets", "Core"): os.path.join(parent_dir, "Core"),
         os.path.join(project_dir, "Assets", "ExternalRes"): os.path.join(parent_dir, "ExternalRes"),
-        os.path.join(project_dir, "Assets", "Scenes"): os.path.join(parent_dir, "Scenes")
+        os.path.join(project_dir, "Assets", "Scenes"): os.path.join(parent_dir, "Scenes"),
+        os.path.join(project_dir, "Assets", "HotFix"): os.path.join(parent_dir, "HotFix")
         # 添加更多映射
     }
 

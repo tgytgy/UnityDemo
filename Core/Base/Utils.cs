@@ -1,4 +1,8 @@
+using System;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public static class Utils
 {
@@ -21,6 +25,23 @@ public static class Utils
         return null;
     }
 
+    public static bool BindBtn(Button button, UnityAction action)
+    {
+        if (button == null)
+        {
+            Debug.LogError("button is null");
+            return false;
+        }
+        button.onClick.AddListener(action);
+        return true;
+    }
+
+    public static bool BindBtnByName(Transform parentTr, string name, UnityAction action)
+    {
+        var btnTr = GetNode(parentTr, name);
+        return btnTr != null && BindBtn(btnTr.GetComponent<Button>(), action);
+    }
+    
     public static Vector3[] GetSpriteCorners(SpriteRenderer spriteRenderer)
     {
         if (spriteRenderer == null)
