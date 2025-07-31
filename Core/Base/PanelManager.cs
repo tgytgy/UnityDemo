@@ -109,7 +109,6 @@ public class PanelManager : Singleton<PanelManager>
         if (_panelNameDic.ContainsKey(panelName))
         {
             _panelNameDic[panelName].Add(s);
-            
         }
         else
         {

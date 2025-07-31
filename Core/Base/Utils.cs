@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -40,6 +41,29 @@ public static class Utils
     {
         var btnTr = GetNode(parentTr, name);
         return btnTr != null && BindBtn(btnTr.GetComponent<Button>(), action);
+    }
+
+    public static void ChangeText(TMP_Text text, string str)
+    {
+        if (text == null)
+        {
+            Debug.LogError("TMP_Text is null");
+            return;
+        }
+
+        text.text = str;
+    }
+
+    public static void ChangeTextByName(Transform parentTr, string name, string str)
+    {
+        var node = GetNode(parentTr, name);
+        if (node == null)
+        {
+            Debug.LogError("Text Node is null");
+            return;
+        }
+
+        ChangeText(node.GetComponent<TMP_Text>(), str);
     }
     
     public static Vector3[] GetSpriteCorners(SpriteRenderer spriteRenderer)
