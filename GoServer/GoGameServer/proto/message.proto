@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package demo;
+
+// 让 protoc 生成的 go 包路径正确（根据你的模块名改最后一段）
+option go_package = "GoGameServer/proto;pb";
+
+message Ping {
+  string text = 1;
+}
+
+message Echo {
+  string text = 1;
+}
+
+// 统一的消息载体：后面可继续加更多消息类型
+message Message {
+  oneof body {
+    Ping ping = 1;
+    Echo echo = 2;
+  }
+}

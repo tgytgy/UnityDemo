@@ -1,0 +1,11 @@
+syntax = "proto3";
+package echo;
+
+option go_package = "GoGameServer/proto;pb";
+
+option csharp_namespace = "Echo"; // 让 C# 生成在 Echo 命名空间里
+
+message Chat {
+  string text = 1;
+  int32  seq  = 2;
+}
