@@ -1,2 +1,0 @@
-local MainHUDLayer = Class("", BaseClassView)
- self:()  return 
