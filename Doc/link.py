@@ -1,69 +1,56 @@
 import os
 import sys
-import subprocess
-import platform
 
-def create_symlink(source, target):
-    """
-    创建软链接
-    :param source: 源文件夹路径
-    :param target: 目标文件夹路径
-    """
-    if not os.path.exists(source):
-        print(f"源路径 '{source}' 不存在，跳过...")
-        return
-
-    if os.path.exists(target):
-        print(f"目标路径 '{target}' 已存在，跳过...")
-        return
-
-    if platform.system() == "Windows":
-        # Windows 使用 mklink 命令
-        try:
-            subprocess.run(["mklink", "/D", target, source], check=True, shell=True)
-            print(f"成功创建软链接: {source} -> {target}")
-        except subprocess.CalledProcessError as e:
-            print(f"创建软链接失败: {e}")
-    else:
-        # Mac/Linux 使用 ln -s 命令
-        try:
-            os.symlink(source, target)
-            print(f"成功创建软链接: {source} -> {target}")
-        except OSError as e:
-            print(f"创建软链接失败: {e}")
 
 def main():
-    # 获取脚本所在目录的上一级路径
     script_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(script_dir)
-    project_dir = "C:\\Users\\17483\\MyProject"    #windows
-    #project_dir = "/Users/tiangengyu/Desktop/UnityProject/Demo" #Mac
 
-    # 定义源文件夹和目标文件夹的映射关系（相对于父目录）
-    symlink_map = {
-        os.path.join(project_dir, "Assets", "Core"): os.path.join(parent_dir, "Core"),
-        os.path.join(project_dir, "Assets", "ExternalRes"): os.path.join(parent_dir, "ExternalRes"),
-        os.path.join(project_dir, "Assets", "Scenes"): os.path.join(parent_dir, "Scenes"),
-        os.path.join(project_dir, "Assets", "HotFix"): os.path.join(parent_dir, "HotFix")
-        # 添加更多映射
-    }
+    core_path = os.path.join(parent_dir, "Core")
+    if not os.path.isdir(core_path):
+        print(f"错误：未在 {parent_dir} 中找到 Core 文件夹")
+        sys.exit(1)
 
-    # 检查是否是管理员权限（Windows 需要管理员权限创建软链接）
-    if platform.system() == "Windows":
-        try:
-            import ctypes
-            if not ctypes.windll.shell32.IsUserAnAdmin():
-                print("在 Windows 上创建软链接需要管理员权限，请以管理员身份运行脚本。")
-                sys.exit(1)
-        except:
-            print("无法检查Windows管理员权限，请确保以管理员身份运行脚本。")
-            sys.exit(1)
+    print(f"找到 Core 文件夹：{core_path}")
 
-    # 创建软链接
-    for target, source in symlink_map.items():
-        create_symlink(source, target)
+    grandparent_dir = os.path.dirname(parent_dir)
+    core_parent_name = os.path.basename(parent_dir)
 
-    print("软链接创建完成。")
+    print(f"扫描目录：{grandparent_dir}")
+    print(f"排除目录：{core_parent_name}")
+
+    for entry in os.listdir(grandparent_dir):
+        entry_path = os.path.join(grandparent_dir, entry)
+        if not os.path.isdir(entry_path) or entry == core_parent_name:
+            continue
+
+        asset_path = os.path.join(entry_path, "Assets")
+        if not os.path.isdir(asset_path):
+            print(f"跳过 {entry}：未找到 Asset 文件夹")
+            continue
+
+        print(f"\n处理 {entry}/Asset ...")
+
+        link_path = os.path.join(asset_path, "Core")
+        if os.path.exists(link_path):
+            if os.path.islink(link_path):
+                print(f"  Core 软链接已存在：{link_path}")
+            else:
+                print(f"  警告：{link_path} 已存在但不是软链接，跳过")
+        else:
+            os.symlink(core_path, link_path, target_is_directory=True)
+            print(f"  已创建软链接：{link_path} -> {core_path}")
+
+        gameplay_path = os.path.join(asset_path, "GamePlay")
+        if os.path.isdir(gameplay_path):
+            print(f"  GamePlay 文件夹已存在")
+        else:
+            os.makedirs(os.path.join(gameplay_path, "Res"), exist_ok=True)
+            os.makedirs(os.path.join(gameplay_path, "Src"), exist_ok=True)
+            print(f"  已创建 GamePlay、GamePlay/Res、GamePlay/Src")
+
+    print("\n完成。")
+
 
 if __name__ == "__main__":
     main()
