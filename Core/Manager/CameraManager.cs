@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.Rendering.Universal;
@@ -7,9 +7,14 @@ public class CameraManager : SingletonMono<CameraManager>
 {
     private Camera _mainCamera;
     private Camera _uiCamera;
+    private bool _globalInitialized;
 
     public void InitGlobalOnce()
     {
+        if (_globalInitialized)
+            return;
+
+        _globalInitialized = true;
         InitGlobalUICamera();
         InitEventSystem();
     }

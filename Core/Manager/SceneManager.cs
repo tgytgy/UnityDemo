@@ -1,20 +1,20 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 
-public class GameManager : SingletonMono<GameManager>
+public class SceneManager : SingletonMono<SceneManager>
 {
     private Coroutine _sceneCoroutine;
 
-    public void StartChangeScene(string sceneName)
+    public void StartChangeScene(string sceneName, Action<string> onSceneLoaded = null)
     {
-        _sceneCoroutine = StartCoroutine(ChangeScene(sceneName));
+        _sceneCoroutine = StartCoroutine(ChangeScene(sceneName, onSceneLoaded));
     }
     
-    public IEnumerator ChangeScene(string sceneName)
+    public IEnumerator ChangeScene(string sceneName, Action<string> onSceneLoaded = null)
     {
         var op = Addressables.LoadSceneAsync(sceneName, LoadSceneMode.Single);
         yield return op;
@@ -23,16 +23,7 @@ public class GameManager : SingletonMono<GameManager>
             Debug.LogError($"load scene failed,exception:{op.OperationException.Message} \r\n {op.OperationException.StackTrace}");
         }
 
-        PanelManager.Instance.InitLayers();
-        ChangeSceneCallBack(sceneName);
+        onSceneLoaded?.Invoke(sceneName);
         StopCoroutine(_sceneCoroutine);
-    }
-
-    private void ChangeSceneCallBack(string sceneName)
-    {
-        if (sceneName == GameLaunch.START_SCENE_NAME)
-        {
-            PanelManager.Instance.PanelOn("prefab_main_panel.prefab", "MainPanel", UILayer.LayerMiddle1);
-        }
     }
 }

@@ -3,15 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using HybridCLR;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if HybridCLR_Enable
+using HybridCLR;
+#endif
+
 public class GameLaunch : MonoBehaviour
 {
-    #region Inner Class
-        
+#if HybridCLR_Enable
     [Serializable]
     public class MethodExecutionInfo
     {
@@ -63,14 +65,14 @@ public class GameLaunch : MonoBehaviour
     {
         public List<MethodExecutionInfo> methodExecutionInfos = new List<MethodExecutionInfo>();
     }
-        
-    #endregion
-    
-    //gameplay程序集
-    const string GAMEPLAY_DLL_NAME = "GamePlay.dll";
+#endif
     
     //开始场景
     public const string START_SCENE_NAME = "StartScene.unity";
+    
+#if HybridCLR_Enable
+    //gameplay程序集
+    const string GAMEPLAY_DLL_NAME = "GamePlay.dll";
     
     //元数据信息文件
     public const string META_DATA_DLLS_TO_LOAD_PATH = "Assets/HotUpdateDlls/MetaDataDllToLoad.txt";
@@ -86,7 +88,8 @@ public class GameLaunch : MonoBehaviour
 
     //元数据信息文件分隔符
     public const string META_DATA_DLL_SEPARATOR = "!";
-    
+#endif    
+
     private Coroutine _launchCoroutine;
     public bool enableHybridCLR = true;
     private AssetLoader _assetLoader;
@@ -106,30 +109,23 @@ public class GameLaunch : MonoBehaviour
     
     private void Start()
     {
-        PanelManager.Instance.InitLayers();
-        CameraManager.Instance.InitGlobalOnce();
+#if HybridCLR_Enable
         _assetLoader = new AssetLoader();
-        if (!enableHybridCLR)
-        {
-            GameManager.Instance.StartChangeScene(START_SCENE_NAME);
-            //GameManager.Instance.ChangeScene(START_SCENE_NAME);
-            return;
-        }
         HybridCLROptimizer.OptimizeHybridCLR();
+#endif
         _launchCoroutine = StartCoroutine(Launch());
-        InitUI();
+    }
+
+    private void OnSceneLoaded(string sceneName)
+    {
+        CameraManager.Instance.InitGlobalOnce();
+        PanelManager.Instance.InitLayers();
+        SystemManager.Instance.InitFromGdSystem();
+        Debug.Log($"[GameLaunch] 场景 {sceneName} 初始化完成");
     }
 
     private void InitUI()
     {
-        _textInfo = Utils.GetNode(transform, "Text_Download").GetComponent<TMP_Text>();
-        _btnLogin = Utils.GetNode(transform, "Btn_Login").GetComponent<Button>();
-        _btnUpd = Utils.GetNode(transform, "Btn_Update").GetComponent<Button>();
-        _textInfo.text = "";
-        _btnLogin.gameObject.SetActive(false);
-        _btnUpd.gameObject.SetActive(false);
-        _btnLogin.onClick.AddListener(LoginBtnClick);
-        _btnUpd.onClick.AddListener(UpdGameBtnClick);
     }
     
     private void OnDestroy()
@@ -144,11 +140,12 @@ public class GameLaunch : MonoBehaviour
     
     private IEnumerator Launch()
     {
-        Debug.Log($"Launch Game! enableHybridCLR:{enableHybridCLR}");
-        
+#if HybridCLR_Enable
         yield return VersionCheck();
         yield return VersionUpdate();
         yield return LoadAssemblies();
+        Debug.Log($"Launch Game! enableHybridCLR");
+#endif
         yield return EnterGame();
     }
 
@@ -183,6 +180,7 @@ public class GameLaunch : MonoBehaviour
         Debug.Log($"VersionUpdate finish!");
     }
     
+#if HybridCLR_Enable
     /// <summary>
     /// 加载热更新程序集
     /// </summary>
@@ -200,7 +198,7 @@ public class GameLaunch : MonoBehaviour
         Debug.Log("LoadAssemblies finish!");
         yield return null;
     }
-    
+
     //补充元数据
     private IEnumerator LoadMetadataForAOTAssemblies()
     {
@@ -317,10 +315,10 @@ public class GameLaunch : MonoBehaviour
             
         Debug.Log("execute RuntimeInitializeOnLoadMethod finish!");
     }
-    
+#endif
     private IEnumerator EnterGame()
     {
-        yield return GameManager.Instance.ChangeScene(START_SCENE_NAME);
+        yield return SceneManager.Instance.ChangeScene(START_SCENE_NAME, OnSceneLoaded);
         Debug.Log("EnterGame finish!");
     }
     
@@ -354,14 +352,5 @@ public class GameLaunch : MonoBehaviour
             enableHybridCLR ? _allHotUpdateAssemblies.Values : AppDomain.CurrentDomain.GetAssemblies();
         return allAssemblies.First(assembly => assembly.FullName.Contains(assemblyName));
     }
-
-    private void LoginBtnClick()
-    {
-        _loginBtnClicked = true;
-    }
-
-    private void UpdGameBtnClick()
-    {
-        _updBtnClicked = true;
-    }
+    
 }
